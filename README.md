@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body style="font-family: 'Segoe UI', sans-serif; line-height: 1.6; background: #f9f9f9; color: #333; padding: 40px; max-width: 900px; margin: auto;">
+<h2 style="color: #2c3e50;">👨‍💻 Maintainer</h2>
+  <p>
+    Maintained by <a href="https://github.com/Parth-code286" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">
+      Parth Nandwalkar
+    </a>
+  </p>
+
 
   <h1 style="color: #2c3e50;">💰 Expense Tracker</h1>
   <p>A powerful full-stack application to track your income and expenses with beautiful <strong>live charts</strong>, real-time analytics, and a smooth user experience.</p>
