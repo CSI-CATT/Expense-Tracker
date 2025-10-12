@@ -38,17 +38,7 @@ module.exports.getAllIncome= async(req,res)=>{
    }
 }
 module.exports.deleteIncome= async(req,res)=>{
-    try {
-        const deleteIncome = await incomeModel.findByIdAndDelete(req.params.id)
-        if(!deleteIncome) {
-            return res.status(402).send('Error Occured')
-        }
-        else{
-            res.send('Income Deleted')
-        }
-    } catch (error) {
-        res.status(404).send(`Server Error : ${error.message}`)
-    }
+   //Write here
 }
 
 module.exports.downloadIncomeExcel = async(res,req)=>{
