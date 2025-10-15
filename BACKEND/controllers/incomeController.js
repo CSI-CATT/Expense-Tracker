@@ -38,8 +38,53 @@ module.exports.getAllIncome= async(req,res)=>{
    }
 }
 module.exports.deleteIncome= async(req,res)=>{
-   //Write here
+   try {
+        const userId = req.user.id;
+        const incomeId = req.params.id;
+
+        if(!userId){
+            return res.status(401).json({ message: "Unauthorized: User ID not found" });
+        }
+
+        if(!incomeId){
+            return res.status(400).json({ message: "Bad Request: Income ID is required" });
+        }
+
+        // Find the income and ensure it belongs to the logged-in user
+        const incomeToDelete = await incomeModel.findOne({ _id: incomeId, userId });
+
+        if (!incomeToDelete) {
+            return res.status(404).json({ message: "Income not found or you don't have permission to delete it" });
+        }
+
+        await incomeModel.deleteOne({ _id: incomeId });
+        return res.status(200).json({ message: "Income deleted successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: `Server Error: ${error.message}` });
+    }
 }
+
+
+module.exports.deleteAllIncome = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        if(!userId){
+            return res.status(401).json({ message: "Unauthorized: User ID not found" });
+        }
+
+        // Delete all income records for this user
+        const result = await incomeModel.deleteMany({ userId });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No incomes found to delete" });
+        }
+
+        return res.status(200).json({ message: `${result.deletedCount} incomes deleted successfully` });
+    } catch (error) {
+        return res.status(500).json({ message: `Server Error: ${error.message}` });
+    }
+};
 
 module.exports.downloadIncomeExcel = async(res,req)=>{
   //Make Your Route Here 
