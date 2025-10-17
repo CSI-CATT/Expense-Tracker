@@ -2,6 +2,7 @@ const { get } = require('mongoose');
 const incomeModel = require('../models/income-model');
 const xlsx = require('xlsx');
 const path = require('path'); // Add this at the top
+const fs = require('fs');
 
 module.exports.addIncome = async (req, res) => {
     const userId = req.user.id;
@@ -86,6 +87,50 @@ module.exports.deleteAllIncome = async (req, res) => {
     }
 };
 
-module.exports.downloadIncomeExcel = async(res,req)=>{
+module.exports.downloadIncomeExcel = async(req,res)=>{
   //Make Your Route Here 
+    try {
+        const userId = req.user.id;
+
+        // Fetch all income records for the logged-in user
+        const incomes = await incomeModel.find({ userId }).sort({ date: -1 });
+
+        if (!incomes || incomes.length === 0) {
+        return res.status(404).json({ message: "No income records found to download" });
+        }
+
+        // Format the data in json for Excel
+        const incomeData = incomes.map((item, index) => ({
+        "Sr No": index + 1,
+        "Source": item.source,
+        "Amount (₹)": item.amount,
+        "Date": new Date(item.date).toLocaleDateString(),
+        "Created At": new Date(item.createdAt).toLocaleString()
+        }));
+
+        // Create a worksheet and workbook in-memory
+        const worksheet = xlsx.utils.json_to_sheet(incomeData);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Income Details");
+
+        // Convert workbook to a buffer
+        const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        // Set headers to prompt download
+        res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=income_details.xlsx"
+        );
+        res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+
+        // Send the buffer directly as response
+        return res.send(buffer);
+
+    } catch (error) {
+        console.error("Error generating income Excel:", error);
+        return res.status(500).json({ message: `Server Error: ${error.message}` });
+    }
 }
